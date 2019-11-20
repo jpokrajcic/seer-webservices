@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<web-app>
+
+    <display-name>SeerTechnologies</display-name>
+    <description>SeerTechnologies Granite Application</description>
+    <!-- Shiro
+    <listener>
+        <listener-class>org.apache.shiro.web.env.EnvironmentLoaderListener</listener-class>
+    </listener>
+    -->
+
+    <!-- Shiro filter -->
+    <filter>
+        <filter-name>shiroFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+        <init-param>
+            <param-name>targetFilterLifecycle</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>shiroFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!-- CORS filter -->
+    <filter>
+        <filter-name>CORS</filter-name>
+        <filter-class>com.thetransactioncompany.cors.CORSFilter</filter-class>
+
+        <init-param>
+            <param-name>cors.allowOrigin</param-name>
+            <param-value>*</param-value>
+        </init-param>
+        <!--         <init-param> -->
+        <!--                 <param-name>cors.allowSubdomains</param-name> -->
+        <!--                 <param-value>true</param-value> -->
+        <!--         </init-param>   -->
+        <init-param>
+            <param-name>cors.supportedHeaders</param-name>
+            <param-value>origin, content-type, accept</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>CORS</filter-name>
+        <servlet-name>jerseyrest</servlet-name>
+    </filter-mapping>
+
+    <!-- Granite config context listener -->
+    <listener>
+        <listener-class>org.granite.config.GraniteConfigListener</listener-class>
+    </listener>
+
+    <listener>
+        <listener-class>com.seer.web.ConfigurationListener</listener-class>
+    </listener>
+
+    <!-- Spring -->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <!-- Spring listener for web-scopes (request, session) -->
+    <listener>
+        <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+    </listener>
+
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>/WEB-INF/web-application-config.xml</param-value>
+    </context-param>
+
+    <!-- Spring MVC dispatcher servlet for AMF remoting requests -->
+    <servlet>
+        <servlet-name>flex</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>flex</servlet-name>
+        <url-pattern>/amfremoting/*</url-pattern>
+        <!-- Backward support for existing tablet apps -->
+        <url-pattern>/amf/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- Definition and mapping of Jersey REST DispatcherServlet -->
+    <servlet>
+        <servlet-name>jerseyrest</servlet-name>
+        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>com.sun.jersey.config.property.packages</param-name>
+            <param-value>
+                com.seer.services.rest;
+                com.seer.controllers.requestObjects;
+                com.seer.services.flex;
+                com.seer.dto;
+                org.codehaus.jackson.jaxrs
+            </param-value>
+            <!-- this is required to activate Jackson instead of JAXB route. With Jackson we don't need POJO annotations  -->
+            <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>jerseyrest</servlet-name>
+        <url-pattern>/rest/*</url-pattern>
+    </servlet-mapping>
+
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+        <welcome-file>index.htm</welcome-file>
+    </welcome-file-list>
+
+</web-app>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+	<entry key="seer.db.jndi">jdbc/SeerDataSource</entry>
+	<entry key="seer.db.useCredentials">false</entry>
+	<entry key="seer.db.timeout">30000</entry>
+	<entry key="seer.db.fetchSize">100</entry>
+	<entry key="seer.db.maxRows">10000</entry>
+
+	<entry key="seer.log4j.xml">log4j.xml</entry>
+
+</properties>

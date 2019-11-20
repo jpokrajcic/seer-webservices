@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+	<!-- Building -->
+	
+	<entry key="Q_Select_Building_By_Id">
+		<![CDATA[
+			SELECT *
+			FROM building
+			WHERE building.id = ? AND building.seer_id = ?
+		]]>
+	</entry>	
+
+	<entry key="Q_Select_Buildings">
+		<![CDATA[
+			SELECT *
+			FROM building
+			WHERE building.seer_id = ?
+			ORDER BY building.id
+		]]>
+	</entry>
+
+	<entry key="Q_Insert_Building">
+		<![CDATA[
+			INSERT INTO building
+			(
+			seer_id,
+			name,
+			street,
+			city,
+			country_id,
+			is_smart
+			)
+			VALUES (?, ?, ?, ?, ?, ?)
+		]]>
+	</entry>
+	
+	<entry key="Q_Update_Building">
+		<![CDATA[
+			UPDATE building
+			SET
+			name = ?,
+			street = ?,
+			city = ?,
+			country_id = ?,
+			is_smart = ?
+			WHERE id = ? AND seer_id = ?
+		]]>
+	</entry>	
+	
+	<entry key="Q_Delete_Building">
+		<![CDATA[
+			DELETE FROM building
+			WHERE id = ? AND  seer_id = ?
+		]]>
+	</entry>
+
+
+	<!-- Apartment -->
+
+	<entry key="Q_Select_Apartment_By_Id">
+		<![CDATA[
+			SELECT *
+			FROM apartment
+			WHERE apartment.id = ?
+		]]>
+	</entry>
+
+	<entry key="Q_Select_Apartments_By_Building_Id">
+		<![CDATA[
+			SELECT *
+			FROM apartment
+			WHERE apartment.building_id = ?
+			ORDER BY apartment.id
+		]]>
+	</entry>
+
+	<entry key="Q_Insert_Apartment">
+		<![CDATA[
+			INSERT INTO apartment
+			(
+			building_id,
+			apartment_number,
+			last_name,
+			contact,
+			size,
+			adults,
+			kids,
+			email,
+			phone,
+			mobile,
+			rent_ends
+			)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		]]>
+	</entry>
+
+	<entry key="Q_Update_Apartment">
+		<![CDATA[
+			UPDATE apartment
+			SET
+			apartment_number = ?,
+			last_name = ?,
+			contact = ?,
+			size = ?,
+			adults = ?,
+			kids = ?,
+			email = ?,
+			phone = ?,
+			mobile = ?,
+			rent_ends = ?
+			WHERE id = ?
+		]]>
+	</entry>
+
+	<entry key="Q_Delete_Apartment">
+		<![CDATA[
+			DELETE FROM apartment
+			WHERE id = ?
+		]]>
+	</entry>
+
+
+	<!-- Task -->
+
+	<entry key="Q_Select_Task_By_Id">
+		<![CDATA[
+			SELECT *
+			FROM task
+			WHERE task.id = ?
+		]]>
+	</entry>
+
+	<entry key="Q_Select_Tasks_By_Building_Id">
+		<![CDATA[
+			SELECT *
+			FROM task
+			WHERE task.building_id = ?
+			ORDER BY task.id
+		]]>
+	</entry>
+
+	<entry key="Q_Insert_Task">
+		<![CDATA[
+			INSERT INTO task
+			(
+			building_id,
+			apartment_id,
+			task_category_id,
+			name,
+			description,
+			done,
+			due_date
+			)
+			VALUES (?, ?, ?, ?, ?, ?, ?)
+		]]>
+	</entry>
+
+	<entry key="Q_Update_Task">
+		<![CDATA[
+			UPDATE task
+			SET
+			apartment_id = ?,
+			task_category_id = ?,
+			name = ?,
+			description = ?,
+			done = ?,
+			due_date = ?
+			WHERE id = ?
+		]]>
+	</entry>
+
+	<entry key="Q_Change_Task_Status">
+		<![CDATA[
+			UPDATE task
+			SET
+			done = ?
+			WHERE id = ?
+		]]>
+	</entry>
+
+	<entry key="Q_Delete_Task">
+		<![CDATA[
+			DELETE FROM task
+			WHERE id = ?
+		]]>
+	</entry>
+
+
+	<!-- Message -->
+
+	<entry key="Q_Select_Message_By_Id">
+		<![CDATA[
+			SELECT *
+			FROM message
+			WHERE message.id = ?
+		]]>
+	</entry>
+
+	<entry key="Q_Select_Messages_By_Building_Id">
+		<![CDATA[
+			SELECT *
+			FROM message
+			WHERE message.building_id = ?
+			ORDER BY message.id
+		]]>
+	</entry>
+
+	<entry key="Q_Select_Messages_By_Apartment_Id">
+		<![CDATA[
+			SELECT *
+			FROM message
+			WHERE message.apartment_id = ?
+			ORDER BY message.id
+		]]>
+	</entry>
+
+	<entry key="Q_Insert_Message">
+		<![CDATA[
+			INSERT INTO message
+			(
+			building_id,
+			apartment_id,
+			title,
+			description,
+			date_created
+			)
+			VALUES (?, ?, ?, ?, ?)
+		]]>
+	</entry>
+
+	<entry key="Q_Update_Message">
+		<![CDATA[
+			UPDATE message
+			SET
+			title = ?,
+			description = ?,
+			date_created = ?
+			WHERE id = ?
+		]]>
+	</entry>
+
+	<entry key="Q_Delete_Message">
+		<![CDATA[
+			DELETE FROM message
+			WHERE id = ?
+		]]>
+	</entry>
+
+
+	<!-- Task category -->
+
+	<entry key="Q_Select_Task_Category_By_Id">
+		<![CDATA[
+			SELECT *
+			FROM taskCategory
+			WHERE taskCategory.id = ?
+		]]>
+	</entry>
+
+	<entry key="Q_Select_Task_Categories_By_Building_Id">
+		<![CDATA[
+			SELECT *
+			FROM taskCategory
+			WHERE taskCategory.building_id = ?
+		]]>
+	</entry>
+
+	<entry key="Q_Select_Task_Categories">
+		<![CDATA[
+			SELECT *
+			FROM taskCategory
+		]]>
+	</entry>
+
+	<entry key="Q_Insert_Task_Category">
+		<![CDATA[
+			INSERT INTO taskCategory
+			(
+			name
+			)
+			VALUES (?)
+		]]>
+	</entry>
+
+	<entry key="Q_Update_Task_Category">
+		<![CDATA[
+			UPDATE taskCategory
+			SET
+			name = ?
+			WHERE id = ?
+		]]>
+	</entry>
+
+	<entry key="Q_Delete_Task_Category">
+		<![CDATA[
+			DELETE FROM taskCategory
+			WHERE id = ?
+		]]>
+	</entry>
+
+
+	<!-- Monitoring -->
+
+	<entry key="Q_Select_Monitoring_By_Id">
+		<![CDATA[
+			SELECT *
+			FROM monitoring
+			WHERE monitoringCategory.id = ?
+		]]>
+	</entry>
+
+	<entry key="Q_Select_Monitorings_By_Building_Id">
+		<![CDATA[
+			SELECT *
+			FROM monitoring
+			WHERE monitoring.building_id = ?
+		]]>
+	</entry>
+
+	<entry key="Q_Select_Monitorings_By_Category_Id_And_Building_Id">
+		<![CDATA[
+			SELECT *
+			FROM monitoring
+			WHERE monitoring.monitoring_category_id = ? AND monitoring.building_id = ?
+		]]>
+	</entry>
+
+	<entry key="Q_Insert_Monitoring">
+		<![CDATA[
+			INSERT INTO monitoring
+			(
+			monitoring_category_id,
+			building_id,
+			value,
+			entry_date
+			)
+			VALUES (?, ?, ?, ?)
+		]]>
+	</entry>
+
+
+	<entry key="Q_Update_Monitoring">
+		<![CDATA[
+			UPDATE monitoring
+			SET
+			value = ?,
+			entry_date = ?
+			WHERE monitoring.id = ?
+		]]>
+	</entry>
+
+	<entry key="Q_Delete_Monitoring">
+		<![CDATA[
+			DELETE FROM monitoring
+			WHERE id = ?
+		]]>
+	</entry>
+
+
+	<!-- Monitoring category -->
+
+	<entry key="Q_Select_Monitoring_Category_By_Id">
+		<![CDATA[
+			SELECT *
+			FROM monitoringCategory
+			WHERE monitoringCategory.id = ?
+		]]>
+	</entry>
+
+	<entry key="Q_Select_Monitoring_Categories">
+		<![CDATA[
+			SELECT *
+			FROM monitoringCategory
+		]]>
+	</entry>
+
+	<entry key="Q_Select_Monitoring_Categories_By_Building_Id">
+		<![CDATA[
+			SELECT *
+			FROM monitoringCategory
+			WHERE monitoringCategory.building_id = ?
+		]]>
+	</entry>
+
+	<entry key="Q_Insert_Monitoring_Category">
+		<![CDATA[
+			INSERT INTO monitoringCategory
+			(
+			name
+			)
+			VALUES (?)
+		]]>
+	</entry>
+
+	<entry key="Q_Update_Monitoring_Category">
+		<![CDATA[
+			UPDATE monitoringCategory
+			SET
+			name = ?
+			WHERE id = ?
+		]]>
+	</entry>
+
+	<entry key="Q_Delete_Monitoring_Category">
+		<![CDATA[
+			DELETE FROM monitoringCategory
+			WHERE id = ?
+		]]>
+	</entry>
+</properties>
