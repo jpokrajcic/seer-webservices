@@ -2,17 +2,57 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
+	<!--User profile-->
+	<entry key="Q_Select_User_Profile_By_Id">
+		<![CDATA[
+			SELECT *
+			FROM user_profile
+			WHERE id = ?
+		]]>
+	</entry>
+
+	<entry key="Q_Select_User_Profile_By_Username">
+		<![CDATA[
+			SELECT *
+			FROM user_profile
+			WHERE username = ?
+		]]>
+	</entry>
+
+
+	<!--User profile info-->
+	<entry key="Q_Select_User_Profile_Info_By_Id">
+		<![CDATA[
+			SELECT *
+			FROM user_profile
+			WHERE id = ?
+		]]>
+	</entry>
+
 	<!-- Building -->
 	
 	<entry key="Q_Select_Building_By_Id">
 		<![CDATA[
-			SELECT *
+			SELECT building.id, building.name, building.street, building.city, building.capacity, building.avatar, building.country_id, building.is_smart, COUNT(apartment.id) as occupied
 			FROM building
-			WHERE building.id = ? AND building.seer_id = ?
+			LEFT JOIN apartment
+			ON building.id = apartment.building_id
+ 			GROUP BY id
+			WHERE building.id = ?
 		]]>
 	</entry>	
 
 	<entry key="Q_Select_Buildings">
+		<![CDATA[
+			SELECT building.id, building.name, building.street, building.city, building.capacity, building.avatar, building.country_Id, building.is_smart, COUNT(apartment.id) as occupied
+			FROM building
+			LEFT JOIN apartment
+			ON building.id = apartment.building_id
+ 			GROUP BY building.id
+		]]>
+	</entry>
+
+	<entry key="Q_Select_Buildings_By_Seer_ID">
 		<![CDATA[
 			SELECT *
 			FROM building
@@ -30,9 +70,11 @@
 			street,
 			city,
 			country_id,
-			is_smart
+			is_smart,
+			capacity,
+			avatar
 			)
-			VALUES (?, ?, ?, ?, ?, ?)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 		]]>
 	</entry>
 	
@@ -44,15 +86,17 @@
 			street = ?,
 			city = ?,
 			country_id = ?,
-			is_smart = ?
-			WHERE id = ? AND seer_id = ?
+			is_smart = ?,
+			capacity = ?,
+			avatar = ?
+			WHERE id = ?
 		]]>
 	</entry>	
 	
 	<entry key="Q_Delete_Building">
 		<![CDATA[
 			DELETE FROM building
-			WHERE id = ? AND  seer_id = ?
+			WHERE id = ?
 		]]>
 	</entry>
 
@@ -81,18 +125,19 @@
 			INSERT INTO apartment
 			(
 			building_id,
-			apartment_number,
+			number,
 			last_name,
 			contact,
 			size,
-			adults,
-			kids,
+			adults_count,
+			children_count,
 			email,
 			phone,
 			mobile,
-			rent_ends
+			rent_ends,
+			is_occupied
 			)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		]]>
 	</entry>
 
@@ -100,16 +145,17 @@
 		<![CDATA[
 			UPDATE apartment
 			SET
-			apartment_number = ?,
+			number = ?,
 			last_name = ?,
 			contact = ?,
 			size = ?,
-			adults = ?,
-			kids = ?,
+			adults_count = ?,
+			children_count = ?,
 			email = ?,
 			phone = ?,
 			mobile = ?,
-			rent_ends = ?
+			rent_ends = ?,
+			is_occupied = ?
 			WHERE id = ?
 		]]>
 	</entry>
@@ -150,7 +196,7 @@
 			task_category_id,
 			name,
 			description,
-			done,
+			completed,
 			due_date
 			)
 			VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -165,7 +211,7 @@
 			task_category_id = ?,
 			name = ?,
 			description = ?,
-			done = ?,
+			completed = ?,
 			due_date = ?
 			WHERE id = ?
 		]]>
@@ -175,7 +221,7 @@
 		<![CDATA[
 			UPDATE task
 			SET
-			done = ?
+			completed = ?
 			WHERE id = ?
 		]]>
 	</entry>
@@ -200,10 +246,12 @@
 
 	<entry key="Q_Select_Messages_By_Building_Id">
 		<![CDATA[
-			SELECT *
+			SELECT message.id, message.building_id, message.apartment_id, message.title, message.body, message.date_created, message.read, message.sent_by_seer, apartment.number as apartment_number, apartment.last_name as apartment_last_name
 			FROM message
+			LEFT JOIN apartment
+			ON message.apartment_id = apartment.id
 			WHERE message.building_id = ?
-			ORDER BY message.id
+			ORDER BY message.date_created
 		]]>
 	</entry>
 
@@ -223,10 +271,12 @@
 			building_id,
 			apartment_id,
 			title,
-			description,
-			date_created
+			body,
+			date_created,
+			read,
+			sent_by_seer
 			)
-			VALUES (?, ?, ?, ?, ?)
+			VALUES (?, ?, ?, ?, ?, ?, ?)
 		]]>
 	</entry>
 
@@ -235,7 +285,7 @@
 			UPDATE message
 			SET
 			title = ?,
-			description = ?,
+			body = ?,
 			date_created = ?
 			WHERE id = ?
 		]]>
@@ -248,35 +298,43 @@
 		]]>
 	</entry>
 
+	<entry key="Q_Mark_Message_As_Read">
+		<![CDATA[
+			UPDATE message
+			SET
+			read = true
+			WHERE id = ?
+		]]>
+	</entry>
 
 	<!-- Task category -->
 
 	<entry key="Q_Select_Task_Category_By_Id">
 		<![CDATA[
 			SELECT *
-			FROM taskCategory
-			WHERE taskCategory.id = ?
+			FROM task_category
+			WHERE task_category.id = ?
 		]]>
 	</entry>
 
 	<entry key="Q_Select_Task_Categories_By_Building_Id">
 		<![CDATA[
 			SELECT *
-			FROM taskCategory
-			WHERE taskCategory.building_id = ?
+			FROM task_category
+			WHERE task_category.building_id = ?
 		]]>
 	</entry>
 
 	<entry key="Q_Select_Task_Categories">
 		<![CDATA[
 			SELECT *
-			FROM taskCategory
+			FROM task_category
 		]]>
 	</entry>
 
 	<entry key="Q_Insert_Task_Category">
 		<![CDATA[
-			INSERT INTO taskCategory
+			INSERT INTO task_category
 			(
 			name
 			)
@@ -286,7 +344,7 @@
 
 	<entry key="Q_Update_Task_Category">
 		<![CDATA[
-			UPDATE taskCategory
+			UPDATE task_category
 			SET
 			name = ?
 			WHERE id = ?
@@ -295,7 +353,7 @@
 
 	<entry key="Q_Delete_Task_Category">
 		<![CDATA[
-			DELETE FROM taskCategory
+			DELETE FROM task_category
 			WHERE id = ?
 		]]>
 	</entry>
@@ -307,7 +365,7 @@
 		<![CDATA[
 			SELECT *
 			FROM monitoring
-			WHERE monitoringCategory.id = ?
+			WHERE monitoring_category.id = ?
 		]]>
 	</entry>
 
@@ -364,29 +422,29 @@
 	<entry key="Q_Select_Monitoring_Category_By_Id">
 		<![CDATA[
 			SELECT *
-			FROM monitoringCategory
-			WHERE monitoringCategory.id = ?
+			FROM monitoring_category
+			WHERE monitoring_category.id = ?
 		]]>
 	</entry>
 
 	<entry key="Q_Select_Monitoring_Categories">
 		<![CDATA[
 			SELECT *
-			FROM monitoringCategory
+			FROM monitoring_category
 		]]>
 	</entry>
 
 	<entry key="Q_Select_Monitoring_Categories_By_Building_Id">
 		<![CDATA[
 			SELECT *
-			FROM monitoringCategory
-			WHERE monitoringCategory.building_id = ?
+			FROM monitoring_category
+			WHERE monitoring_category.building_id = ?
 		]]>
 	</entry>
 
 	<entry key="Q_Insert_Monitoring_Category">
 		<![CDATA[
-			INSERT INTO monitoringCategory
+			INSERT INTO monitoring_category
 			(
 			name
 			)
@@ -396,7 +454,7 @@
 
 	<entry key="Q_Update_Monitoring_Category">
 		<![CDATA[
-			UPDATE monitoringCategory
+			UPDATE monitoring_category
 			SET
 			name = ?
 			WHERE id = ?
@@ -405,7 +463,7 @@
 
 	<entry key="Q_Delete_Monitoring_Category">
 		<![CDATA[
-			DELETE FROM monitoringCategory
+			DELETE FROM monitoring_category
 			WHERE id = ?
 		]]>
 	</entry>

@@ -73,18 +73,18 @@
     </context-param>
 
     <!-- Spring MVC dispatcher servlet for AMF remoting requests -->
-    <servlet>
-        <servlet-name>flex</servlet-name>
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
+    <!--<servlet>-->
+        <!--<servlet-name>flex</servlet-name>-->
+        <!--<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>-->
+        <!--<load-on-startup>1</load-on-startup>-->
+    <!--</servlet>-->
 
-    <servlet-mapping>
-        <servlet-name>flex</servlet-name>
-        <url-pattern>/amfremoting/*</url-pattern>
-        <!-- Backward support for existing tablet apps -->
-        <url-pattern>/amf/*</url-pattern>
-    </servlet-mapping>
+    <!--<servlet-mapping>-->
+        <!--<servlet-name>flex</servlet-name>-->
+        <!--<url-pattern>/amfremoting/*</url-pattern>-->
+        <!--&lt;!&ndash; Backward support for existing tablet apps &ndash;&gt;-->
+        <!--<url-pattern>/amf/*</url-pattern>-->
+    <!--</servlet-mapping>-->
 
     <!-- Definition and mapping of Jersey REST DispatcherServlet -->
     <servlet>

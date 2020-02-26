@@ -2,7 +2,7 @@ package com.seer.dao;
 
 import com.seer.common.ErrorCodes;
 import com.seer.config.Configuration;
-import com.seer.Seer;
+import com.seer.dto.Seer;
 import com.seer.exception.DAOException;
 import com.seer.mappers.SeerMapper;
 import com.seer.utils.TypedProperties;
@@ -16,9 +16,6 @@ public class SeerDAO {
 
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private DriverManagerDataSource dataSource;
-
-    private TypedProperties generalProperties = Configuration.get().getProps();
-    private TypedProperties localeEN = Configuration.get().getLocaleEN();
 
     public SeerDAO(SimpleJdbcTemplate template) {
         this.simpleJdbcTemplate = template;
@@ -40,6 +37,6 @@ public class SeerDAO {
             throw new DAOException(ErrorCodes.DATABASE_READ_ERROR, "Unable to get Seers");
         }
 
-        return Seers;
+        return seers;
     }
 }

@@ -33,6 +33,10 @@ public class UserProfileDAO {
         this.simpleJdbcTemplate = new SimpleJdbcTemplate(dataSource);
     }
 
+    public UserProfileDAO() {
+        String test = "ddd";
+    }
+
     /**
      * Create UserProfile and return it (opens new connection)
      *
@@ -68,7 +72,7 @@ public class UserProfileDAO {
             if (existingConnection == false)
                 conn = dataSource.getConnection();
 
-            pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            pstmt = conn.prepareStatement(sql);
 
             Timestamp currentTime = new Timestamp(System.currentTimeMillis());
 
@@ -132,7 +136,7 @@ public class UserProfileDAO {
 
             Timestamp currentTime = new Timestamp(System.currentTimeMillis());
 
-            pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            pstmt = conn.prepareStatement(sql);
 
             pstmt.setObject(1, object.username, Types.VARCHAR);
             pstmt.setObject(2, object.password, Types.VARCHAR);
@@ -213,7 +217,7 @@ public class UserProfileDAO {
             if (existingConnection == false)
                 conn = dataSource.getConnection();
 
-            pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            pstmt = conn.prepareStatement(sql);
             pstmt.setObject(1, id, Types.BIGINT);
             rs = pstmt.executeQuery();
             if (rs.next()) {

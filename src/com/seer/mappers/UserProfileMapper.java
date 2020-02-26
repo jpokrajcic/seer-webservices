@@ -12,7 +12,6 @@ public final class UserProfileMapper implements RowMapper<UserProfile> {
 	public UserProfile mapRow(ResultSet rs, int rowNum) throws SQLException {
 		UserProfile object = new UserProfile();
         object.id = DaoTools.getLong(rs, "id");
-        object.customerId = DaoTools.getLong(rs, "customer_id");
         object.username = rs.getString("username");
         object.password = rs.getString("password");
         object.email = rs.getString("email");

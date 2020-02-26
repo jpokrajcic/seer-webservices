@@ -55,7 +55,7 @@ public class SessionService extends AbstractSeerService {
             throw new SeerException(ErrorCodes.DATABASE_READ_ERROR, "Read error");
         }
 
-        if (userProfile != null && userProfile.enabled == true && userProfile.role == UserTypeEnum.CUSTOMER) {
+        if (userProfile != null && userProfile.enabled == true && userProfile.role == UserTypeEnum.SEER) {
             session.setAttribute("loginTime", new Date(System.currentTimeMillis()));
             session.setAttribute("userProfile", userProfile);
 

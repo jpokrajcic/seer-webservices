@@ -1,7 +1,5 @@
 package com.seer.dto;
 
-import java.sql.Date;
-
 public class Building {
     public Long id;
     public String name;
@@ -9,4 +7,7 @@ public class Building {
     public String city;
     public Long countryId;
     public Boolean isSmart;
+    public Integer capacity;
+    public Integer occupied;
+    public String avatar;
 }

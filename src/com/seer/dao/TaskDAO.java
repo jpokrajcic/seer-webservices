@@ -38,7 +38,7 @@ public class TaskDAO {
         this.simpleJdbcTemplate = new SimpleJdbcTemplate(dataSource);
     }
 
-    public Task create(Task object, Long seerId) throws DAOException {
+    public Task create(Task object) throws DAOException {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(dataSource).
                 withTableName("task").
                 usingGeneratedKeyColumns("id");
@@ -50,7 +50,7 @@ public class TaskDAO {
             parameters.addValue("task_category_id", object.taskCategoryId);
             parameters.addValue("name", object.name);
             parameters.addValue("description", object.description);
-            parameters.addValue("done", object.done);
+            parameters.addValue("completed", object.completed);
             parameters.addValue("due_date", object.dueDate);
 
             Long rowId = 0L;
@@ -79,8 +79,9 @@ public class TaskDAO {
                     object.taskCategoryId,
                     object.name,
                     object.description,
-                    object.done,
-                    object.dueDate
+                    object.completed,
+                    object.dueDate,
+                    object.id
             );
 
             if (updatedRows > 0) {
@@ -95,18 +96,18 @@ public class TaskDAO {
         }
     }
 
-    public Task changeTaskStatus(Task object, Long seerId) throws DAOException {
+    public Task changeTaskStatus(Boolean completed, Long id) throws DAOException {
         String sql = this.sqlQueries.getString("Q_Change_Task_Status");
 
         Integer updatedRows;
 
         try{
             updatedRows = this.simpleJdbcTemplate.update(sql,
-                    object.done,
-                    object.id);
+                    completed,
+                    id);
 
             if (updatedRows > 0) {
-                return getTaskById(object.id.longValue());
+                return getTaskById(id.longValue());
             }
             else {
                 throw new DAOException(ErrorCodes.DATABASE_UPDATE_NOT_EXIST, "Task does not exist in database");
@@ -136,7 +137,7 @@ public class TaskDAO {
             if(existingConnection == false)
                 conn = dataSource.getConnection();
 
-            pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            pstmt = conn.prepareStatement(sql);
 
             pstmt.setObject(1, id, Types.BIGINT);
 

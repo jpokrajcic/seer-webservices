@@ -12,6 +12,7 @@ public class MonitoringCategoryMapper implements RowMapper<MonitoringCategory> {
         MonitoringCategory object = new MonitoringCategory();
         object.id = DaoTools.getLong(rs, "id");
         object.name = rs.getString("name");
+        object.buildingId = DaoTools.getLong(rs, "building_id");
 
         return object;
     }

@@ -1,17 +1,17 @@
 package com.seer.services.rest;
 
 import com.seer.common.ErrorCodes;
-import com.seer.config.Configuration;
 import com.seer.exception.RESTSeerException;
+import com.seer.exception.SeerException;
 import com.seer.services.SeerService;
 import com.seer.services.SessionService;
+import com.seer.services.flex.ResponseData;
 import com.seer.services.rest.ro.AnonymusService.LoginRO;
-import com.seer.utils.TypedProperties;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.threeten.bp.LocalDate;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
@@ -99,27 +99,27 @@ public class RESTAnonymousService {
         try {
             responseData = sessionService.keepAlive(sessionToken);
         }
-        catch (SeerException ex) {
-            throw new RESTSeerException(ex.errorCode.intValue(),ex.getMessage());
+        catch (Exception ex) {
+            throw new RESTSeerException(0,ex.getMessage());
         }
         return new RESTResponseData(responseData);
     }
 
-    @POST
-    @Path("/getUserProfile")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
-    @RequiresPermissions("user:read")
-    public RESTResponseData getUserProfile(String sessionToken) throws RESTSeerException {
-        ResponseData responseData = null;
-        try {
-            responseData = sessionService.getUserProfile(sessionToken);
-        }
-        catch (SeerException ex) {
-            throw new RESTSeerException(ex.errorCode.intValue(),ex.getMessage());
-        }
-        // must convert java.sql.Timestamp!
-        responseData.data = new com.seer.dto.rest.UserProfile().fromCleanDto((com.seer.dto.UserProfile) responseData.data);
-        return new RESTResponseData(responseData);
-    }
+//    @POST
+//    @Path("/getUserProfile")
+//    @Consumes({MediaType.APPLICATION_JSON})
+//    @Produces({MediaType.APPLICATION_JSON})
+//    @RequiresPermissions("user:read")
+//    public RESTResponseData getUserProfile(String sessionToken) throws RESTSeerException {
+//        ResponseData responseData = null;
+//        try {
+//            responseData = sessionService.getUserProfile(sessionToken);
+//        }
+//        catch (SeerException ex) {
+//            throw new RESTSeerException(ex.errorCode,ex.getMessage());
+//        }
+//        // must convert java.sql.Timestamp!
+//        responseData.data = new com.seer.dto.UserProfile().fromCleanDto((com.seer.dto.UserProfile) responseData.data);
+//        return new RESTResponseData(responseData);
+//    }
 }

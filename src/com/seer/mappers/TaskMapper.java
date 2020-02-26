@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import com.seer.dto.Task;
 import com.seer.utils.DaoTools;
 
-public class TasktMapper implements RowMapper<Task> {
+public class TaskMapper implements RowMapper<Task> {
 
     public Task mapRow(ResultSet rs, int rowNum) throws SQLException {
         Task object = new Task();
@@ -16,7 +16,7 @@ public class TasktMapper implements RowMapper<Task> {
         object.taskCategoryId = DaoTools.getLong(rs, "task_category_id");
         object.name = rs.getString("name");
         object.description = rs.getString("description");
-        object.done = rs.getBoolean("done");
+        object.completed = rs.getBoolean("completed");
         object.dueDate = rs.getDate("due_date");
 
         return object;

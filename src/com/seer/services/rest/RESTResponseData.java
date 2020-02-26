@@ -1,6 +1,7 @@
 package com.seer.services.rest;
 
 import com.seer.common.StatusCodes;
+import com.seer.services.flex.ResponseData;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
@@ -67,18 +68,19 @@ public class RESTResponseData
 		this.description = rd.description;
 
 		if(rd.data!=null){
-			if(rd.data instanceof String){
-				this.responseText = rd.data.toString();
-			}
-			else if(rd.data instanceof Integer){
-				this.responseInt = (Integer) rd.data;
-			}
-			else if(rd.data instanceof Float){
-				this.responseFloat = (Float) rd.data;
-			}
-			else{
-				this.data = rd.data;
-			}
+			this.data = rd.data;
+//			if(rd.data instanceof String){
+//				this.responseText = rd.data.toString();
+//			}
+//			else if(rd.data instanceof Integer){
+//				this.responseInt = (Integer) rd.data;
+//			}
+//			else if(rd.data instanceof Float){
+//				this.responseFloat = (Float) rd.data;
+//			}
+//			else{
+//				this.data = rd.data;
+//			}
 		}
 	}
 

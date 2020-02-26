@@ -4,16 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Collection;
 
+import com.seer.enums.UserTypeEnum;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -38,7 +33,7 @@ public class MessageDAO {
         this.simpleJdbcTemplate = new SimpleJdbcTemplate(dataSource);
     }
 
-    public Message create(Message object) throws DAOException {
+    public Message create(Message object, int role) throws DAOException {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(dataSource).
                 withTableName("message").
                 usingGeneratedKeyColumns("id");
@@ -48,8 +43,10 @@ public class MessageDAO {
             parameters.addValue("building_id", object.buildingId);
             parameters.addValue("apartment_id", object.apartmentId);
             parameters.addValue("title", object.title);
-            parameters.addValue("description", object.description);
+            parameters.addValue("body", object.body);
             parameters.addValue("date_created", object.dateCreated);
+            parameters.addValue("read", false);
+            parameters.addValue("sent_by_seer", role == UserTypeEnum.SEER);
 
             Long rowId = 0L;
 
@@ -74,7 +71,7 @@ public class MessageDAO {
         try{
             updatedRows = this.simpleJdbcTemplate.update(sql,
                     object.title,
-                    object.description,
+                    object.body,
                     object.dateCreated);
 
             if (updatedRows > 0) {
@@ -90,7 +87,7 @@ public class MessageDAO {
     }
 
     public Message getMessageById(Long id) throws DAOException {
-        return getMessageById(id, seerId, null);
+        return getMessageById(id, null);
     }
 
     public Message getMessageById(Long id, Connection conn) throws DAOException {
@@ -108,7 +105,7 @@ public class MessageDAO {
             if(existingConnection == false)
                 conn = dataSource.getConnection();
 
-            pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            pstmt = conn.prepareStatement(sql);
 
             pstmt.setObject(1, id, Types.BIGINT);
 
@@ -179,6 +176,25 @@ public class MessageDAO {
         }
 
         if (deletedRows > 0) {
+            return id;
+        }else {
+            throw new DAOException(ErrorCodes.DATABASE_DELETE_NOT_EXIST, "Message does not exist in database");
+        }
+    }
+
+    public Long markAsRead(Long id) throws DAOException {
+        String sql = this.sqlQueries.getString("Q_Mark_Message_As_Read");
+
+        Integer markedRows;
+
+        try{
+            markedRows = this.simpleJdbcTemplate.update(sql, id);
+        }
+        catch(DataAccessException e){
+            throw new DAOException(ErrorCodes.DATABASE_DELETE_ERROR, "Unable to mark message as read");
+        }
+
+        if (markedRows > 0) {
             return id;
         }else {
             throw new DAOException(ErrorCodes.DATABASE_DELETE_NOT_EXIST, "Message does not exist in database");

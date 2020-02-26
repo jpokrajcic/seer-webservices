@@ -5,15 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Collection;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -48,7 +43,7 @@ public class MonitoringDAO {
             parameters.addValue("monitoring_category_id", object.monitoringCategoryId);
             parameters.addValue("building_id", object.buildingId);
             parameters.addValue("value", object.value);
-            parameters.addValue("entry_date", entryDate.name);
+            parameters.addValue("entry_date", object.entryDate);
 
             Long rowId = 0L;
 
@@ -107,7 +102,7 @@ public class MonitoringDAO {
             if(existingConnection == false)
                 conn = dataSource.getConnection();
 
-            pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            pstmt = conn.prepareStatement(sql);
 
             pstmt.setObject(1, id, Types.BIGINT);
 

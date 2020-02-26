@@ -2,13 +2,13 @@ package com.seer.dto;
 
 import java.sql.Date;
 
-public class Apartment {
+public class Task {
     public Long id;
     public Long buildingId;
     public Long apartmentId;
     public Long taskCategoryId;
     public String name;
     public String description;
-    public Boolean done;
+    public Boolean completed;
     public Date dueDate;
 }

@@ -4,16 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Collection;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -38,7 +32,7 @@ public class ApartmentDAO {
         this.simpleJdbcTemplate = new SimpleJdbcTemplate(dataSource);
     }
 
-    public Apartment create(Apartment object, Long seerId) throws DAOException {
+    public Apartment create(Apartment object) throws DAOException {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(dataSource).
                 withTableName("apartment").
                 usingGeneratedKeyColumns("id");
@@ -46,17 +40,17 @@ public class ApartmentDAO {
         try{
             MapSqlParameterSource parameters = new MapSqlParameterSource();
             parameters.addValue("building_id", object.buildingId);
-            parameters.addValue("apartment_number", object.apartmentNumber);
+            parameters.addValue("number", object.number);
             parameters.addValue("last_name", object.lastName);
             parameters.addValue("contact", object.contact);
             parameters.addValue("size", object.size);
-            parameters.addValue("adults", object.adults);
-            parameters.addValue("kids", object.kids);
+            parameters.addValue("adults_count", object.adultsCount);
+            parameters.addValue("children_count", object.childrenCount);
             parameters.addValue("email", object.email);
             parameters.addValue("phone", object.phone);
             parameters.addValue("mobile", object.mobile);
             parameters.addValue("rent_ends", object.rentEnds);
-            );
+            parameters.addValue("is_occupied", object.isOccupied);
 
             Long rowId = 0L;
 
@@ -80,16 +74,18 @@ public class ApartmentDAO {
 
         try{
             updatedRows = this.simpleJdbcTemplate.update(sql,
-                    object.apartmentNumber,
+                    object.number,
                     object.lastName,
                     object.contact,
                     object.size,
-                    object.adults,
-                    object.kids,
+                    object.adultsCount,
+                    object.childrenCount,
                     object.email,
                     object.phone,
                     object.mobile,
-                    object.rentEnds);
+                    object.rentEnds,
+                    object.isOccupied,
+                    object.id);
 
             if (updatedRows > 0) {
                 return getApartmentById(object.id.longValue());
@@ -122,7 +118,7 @@ public class ApartmentDAO {
             if(existingConnection == false)
                 conn = dataSource.getConnection();
 
-            pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            pstmt = conn.prepareStatement(sql);
 
             pstmt.setObject(1, id, Types.BIGINT);
 

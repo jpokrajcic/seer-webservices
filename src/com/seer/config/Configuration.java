@@ -48,7 +48,6 @@ public class Configuration {
         propsGeneral.loadFromXML(servletContext.getResourceAsStream(configFilePath));
 
         propsQueries.loadFromXML(servletContext.getResourceAsStream(configSqlCrudFilePath));
-        propsQueries.loadFromXML(servletContext.getResourceAsStream(configSqlCropwireCrudFilePath));
 
         propsGeneral = propsGeneral.trimProperties();
         propsQueries = propsQueries.trimProperties();

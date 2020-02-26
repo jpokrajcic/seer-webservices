@@ -16,6 +16,9 @@ public class BuildingMapper implements RowMapper<Building> {
         object.city = rs.getString("city");
         object.countryId = DaoTools.getLong(rs, "country_id");
         object.isSmart = rs.getBoolean("is_smart");
+        object.capacity = rs.getInt("capacity");
+        object.occupied = rs.getInt("occupied");
+        object.avatar = rs.getString("avatar");
 
         return object;
     }

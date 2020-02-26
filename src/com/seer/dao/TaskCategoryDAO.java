@@ -45,7 +45,7 @@ public class TaskCategoryDAO {
 
         try{
             MapSqlParameterSource parameters = new MapSqlParameterSource();
-            parameters.addValue("name", object.buildingId);
+            parameters.addValue("name", object.name);
 
             Long rowId = 0L;
 
@@ -85,7 +85,7 @@ public class TaskCategoryDAO {
     }
 
     public TaskCategory getTaskCategoryById(Long id) throws DAOException {
-        return getTaskCategoryById(id, seerId, null);
+        return getTaskCategoryById(id, null);
     }
 
     public TaskCategory getTaskCategoryById(Long id, Connection conn) throws DAOException {
@@ -103,7 +103,7 @@ public class TaskCategoryDAO {
             if(existingConnection == false)
                 conn = dataSource.getConnection();
 
-            pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            pstmt = conn.prepareStatement(sql);
 
             pstmt.setObject(1, id, Types.BIGINT);
 

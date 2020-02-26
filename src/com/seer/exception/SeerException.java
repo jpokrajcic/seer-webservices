@@ -1,10 +1,10 @@
 package com.seer.exception;
 
-public class SeerException extends RuntimeException {
+public class SeerException extends Exception {
 
 	private static final long serialVersionUID = 1L;
-	
-	public Integer errorCode = 1;
+
+	public int errorCode = 1;
 
 	public SeerException() {
 		super();
@@ -21,7 +21,7 @@ public class SeerException extends RuntimeException {
 
 	public SeerException(Throwable cause) {
 		super(cause);
-	}	
+	}
 
 	public SeerException(int errorCode, String message, Throwable cause) {
 		super(message, cause);

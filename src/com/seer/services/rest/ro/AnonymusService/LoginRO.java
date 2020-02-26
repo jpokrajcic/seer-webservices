@@ -1,4 +1,4 @@
-package com.SEER.services.rest.ro.AnonymusService;
+package com.seer.services.rest.ro.AnonymusService;
 
 import javax.xml.bind.annotation.XmlRootElement;
 

@@ -13,9 +13,13 @@ public class MessageMapper implements RowMapper<Message> {
         object.id = DaoTools.getLong(rs, "id");
         object.buildingId = DaoTools.getLong(rs, "building_id");
         object.apartmentId = DaoTools.getLong(rs, "apartment_id");
+        object.apartmentNumber = rs.getString("apartment_number");
+        object.apartmentLastName = rs.getString("apartment_last_name");
         object.title = rs.getString("title");
-        object.description = rs.getString("description");
+        object.body = rs.getString("body");
         object.dateCreated = rs.getDate("date_created");
+        object.read = rs.getBoolean("read");
+        object.sentBySeer = rs.getBoolean("sent_by_seer");
 
         return object;
     }

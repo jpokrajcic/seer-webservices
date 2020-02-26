@@ -1,10 +1,8 @@
 package com.seer.services;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.sql.Date;
-
-import org.apache.log4j.Logger;
+import com.seer.dao.*;
+import com.seer.dto.*;
+import com.seer.enums.UserTypeEnum;
 import org.apache.shiro.session.Session;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
@@ -15,6 +13,8 @@ import com.seer.exception.DAOException;
 import com.seer.exception.SeerException;
 import com.seer.services.flex.ResponseData;
 
+import java.util.Collection;
+
 public class SeerService extends AbstractSeerService {
 
     /**
@@ -23,7 +23,6 @@ public class SeerService extends AbstractSeerService {
      */
     public SeerService(DriverManagerDataSource dataSource) {
         super(dataSource);
-        logger = Logger.getLogger(SeerService.class);
     }
 
     ///////////////////////////////
@@ -37,7 +36,7 @@ public class SeerService extends AbstractSeerService {
         if (userProfile != null && userProfile.role == UserTypeEnum.SEER){
             BuildingDAO dao = new BuildingDAO(dataSource);
             try {
-                Building res = dao.getBuildingForId(id, userProfile.seerId);
+                Building res = dao.getBuildingForId(id);
                 if (res != null) {
                     return new ResponseData(StatusCodes.OK, "", res);
                 } else {
@@ -51,14 +50,35 @@ public class SeerService extends AbstractSeerService {
         }
     }
 
-    public ResponseData getBuildings(String sessionToken)/* throws SeerException */ {
+    public ResponseData getBuildings(String sessionToken) throws SeerException {
         Session session = getSubject(sessionToken).getSession();
         UserProfile userProfile = (UserProfile) session.getAttribute("userProfile");
 
         if (userProfile != null && userProfile.role == UserTypeEnum.SEER){
             BuildingDAO dao = new BuildingDAO(dataSource);
             try {
-                Collection<Building> res = dao.getBuildings(userProfile.seerId);
+                Collection<Building> res = dao.getBuildings();
+                if (res != null) {
+                    return new ResponseData(StatusCodes.OK, "", res);
+                } else {
+                    return new ResponseData(StatusCodes.UNKNOWN_ERROR, "", res);
+                }
+            } catch (DAOException ex) {
+                throw new SeerException(ErrorCodes.DATABASE_READ_ERROR, "Read error");
+            }
+        }else{
+            return new ResponseData(1,"",null);
+        }
+    }
+
+    public ResponseData getBuildingsBySeerId(String sessionToken) throws SeerException {
+        Session session = getSubject(sessionToken).getSession();
+        UserProfile userProfile = (UserProfile) session.getAttribute("userProfile");
+
+        if (userProfile != null && userProfile.role == UserTypeEnum.SEER){
+            BuildingDAO dao = new BuildingDAO(dataSource);
+            try {
+                Collection<Building> res = dao.getBuildingsBySeerId(userProfile.id);
                 if (res != null) {
                     return new ResponseData(StatusCodes.OK, "", res);
                 } else {
@@ -79,7 +99,7 @@ public class SeerService extends AbstractSeerService {
         if (userProfile != null && userProfile.role == UserTypeEnum.SEER){
             BuildingDAO dao = new BuildingDAO(dataSource);
             try {
-                Building createdBuilding = dao.create(object, userProfile.seerId);
+                Building createdBuilding = dao.create(object, userProfile.id);
                 if (createdBuilding != null) {
                     return new ResponseData(StatusCodes.OK, "", createdBuilding);
                 } else {
@@ -100,7 +120,7 @@ public class SeerService extends AbstractSeerService {
         if (userProfile != null && userProfile.role == UserTypeEnum.SEER){
             BuildingDAO dao = new BuildingDAO(dataSource);
             try {
-                Building objUpdated = dao.update(object, userProfile.seerId);
+                Building objUpdated = dao.update(object);
                 if (objUpdated != null) {
                     return new ResponseData(StatusCodes.OK, "", objUpdated);
                 } else {
@@ -121,7 +141,7 @@ public class SeerService extends AbstractSeerService {
         if (userProfile != null && userProfile.role == UserTypeEnum.SEER){
             BuildingDAO dao = new BuildingDAO(dataSource);
             try {
-                Long deletedObjectId = dao.delete(id, userProfile.seerId);
+                Long deletedObjectId = dao.delete(id);
                 if (deletedObjectId > 0) {
                     return new ResponseData(StatusCodes.OK, "", deletedObjectId);
                 } else {
@@ -161,7 +181,7 @@ public class SeerService extends AbstractSeerService {
         }
     }
 
-    public ResponseData getApartmentsByBuildingId(String sessionToken, Long id)/* throws SeerException */ {
+    public ResponseData getApartmentsByBuildingId(String sessionToken, Long id) throws SeerException {
         Session session = getSubject(sessionToken).getSession();
         UserProfile userProfile = (UserProfile) session.getAttribute("userProfile");
 
@@ -196,7 +216,7 @@ public class SeerService extends AbstractSeerService {
                     return new ResponseData(StatusCodes.UNKNOWN_ERROR, "", createdApartment);
                 }
             } catch (DAOException ex) {
-                throw new SeerException(ErrorCodes.DATABASE_INSERT_ERROR, "Unable to insert new building.");
+                throw new SeerException(ErrorCodes.DATABASE_INSERT_ERROR, "Unable to insert new apartment.");
             }
         }else{
             return new ResponseData(1,"",null);
@@ -238,7 +258,7 @@ public class SeerService extends AbstractSeerService {
                     return new ResponseData(StatusCodes.UNKNOWN_ERROR, "", deletedObjectId);
                 }
             } catch (DAOException ex) {
-                throw new SeerException(ErrorCodes.DATABASE_UPDATE_ERROR, "Unable to delete building.");
+                throw new SeerException(ErrorCodes.DATABASE_UPDATE_ERROR, "Unable to delete apartment.");
             }
         }else{
             return new ResponseData(1,"",null);
@@ -271,14 +291,14 @@ public class SeerService extends AbstractSeerService {
         }
     }
 
-    public ResponseData getTasksByBuildingId(String sessionToken, Long id)/* throws SeerException */ {
+    public ResponseData getTasksByBuildingId(String sessionToken, Long id) throws SeerException {
         Session session = getSubject(sessionToken).getSession();
         UserProfile userProfile = (UserProfile) session.getAttribute("userProfile");
 
         if (userProfile != null && userProfile.role == UserTypeEnum.SEER){
             TaskDAO dao = new TaskDAO(dataSource);
             try {
-                Collection<Task> res = dao.getTasks(id);
+                Collection<Task> res = dao.getTasksByBuildingId(id);
                 if (res != null) {
                     return new ResponseData(StatusCodes.OK, "", res);
                 } else {
@@ -306,7 +326,7 @@ public class SeerService extends AbstractSeerService {
                     return new ResponseData(StatusCodes.UNKNOWN_ERROR, "", createdTask);
                 }
             } catch (DAOException ex) {
-                throw new SeerException(ErrorCodes.DATABASE_INSERT_ERROR, "Unable to insert new building.");
+                throw new SeerException(ErrorCodes.DATABASE_INSERT_ERROR, "Unable to insert new task.");
             }
         }else{
             return new ResponseData(1,"",null);
@@ -334,21 +354,21 @@ public class SeerService extends AbstractSeerService {
         }
     }
 
-    public ResponseData changeTaskStatus(String sessionToken, Task object) throws SeerException {
+    public ResponseData changeTaskStatus(String sessionToken, Boolean completed, Long id) throws SeerException {
         Session session = getSubject(sessionToken).getSession();
         UserProfile userProfile = (UserProfile) session.getAttribute("userProfile");
 
         if (userProfile != null && userProfile.role == UserTypeEnum.SEER){
             TaskDAO dao = new TaskDAO(dataSource);
             try {
-                Task objUpdated = dao.update(object);
+                Task objUpdated = dao.changeTaskStatus(completed, id);
                 if (objUpdated != null) {
                     return new ResponseData(StatusCodes.OK, "", objUpdated);
                 } else {
                     return new ResponseData(StatusCodes.UNKNOWN_ERROR, "", objUpdated);
                 }
             } catch (DAOException ex) {
-                throw new SeerException(ErrorCodes.DATABASE_UPDATE_ERROR, "Update error");
+                throw new SeerException(ErrorCodes.DATABASE_UPDATE_ERROR, "Update status error");
             }
         }else{
             return new ResponseData(1,"",null);
@@ -369,7 +389,7 @@ public class SeerService extends AbstractSeerService {
                     return new ResponseData(StatusCodes.UNKNOWN_ERROR, "", deletedObjectId);
                 }
             } catch (DAOException ex) {
-                throw new SeerException(ErrorCodes.DATABASE_UPDATE_ERROR, "Unable to delete building.");
+                throw new SeerException(ErrorCodes.DATABASE_UPDATE_ERROR, "Unable to delete task.");
             }
         }else{
             return new ResponseData(1,"",null);
@@ -402,14 +422,14 @@ public class SeerService extends AbstractSeerService {
         }
     }
 
-    public ResponseData getTaskCategories(String sessionToken)/* throws SeerException */ {
+    public ResponseData getTaskCategories(String sessionToken) throws SeerException {
         Session session = getSubject(sessionToken).getSession();
         UserProfile userProfile = (UserProfile) session.getAttribute("userProfile");
 
         if (userProfile != null && userProfile.role == UserTypeEnum.SEER){
             TaskCategoryDAO dao = new TaskCategoryDAO(dataSource);
             try {
-                Collection<TaskCategory> res = dao.getTaskCategorys();
+                Collection<TaskCategory> res = dao.getTaskCategories();
                 if (res != null) {
                     return new ResponseData(StatusCodes.OK, "", res);
                 } else {
@@ -423,14 +443,14 @@ public class SeerService extends AbstractSeerService {
         }
     }
 
-    public ResponseData getTaskCategoriesByBuildingId(String sessionToken, Long id)/* throws SeerException */ {
+    public ResponseData getTaskCategoriesByBuildingId(String sessionToken, Long id) throws SeerException {
         Session session = getSubject(sessionToken).getSession();
         UserProfile userProfile = (UserProfile) session.getAttribute("userProfile");
 
         if (userProfile != null && userProfile.role == UserTypeEnum.SEER){
             TaskCategoryDAO dao = new TaskCategoryDAO(dataSource);
             try {
-                Collection<TaskCategory> res = dao.getTaskCategorysByBuildingId(id);
+                Collection<TaskCategory> res = dao.getTaskCategoriesByBuildingId(id);
                 if (res != null) {
                     return new ResponseData(StatusCodes.OK, "", res);
                 } else {
@@ -458,7 +478,7 @@ public class SeerService extends AbstractSeerService {
                     return new ResponseData(StatusCodes.UNKNOWN_ERROR, "", createdTaskCategory);
                 }
             } catch (DAOException ex) {
-                throw new SeerException(ErrorCodes.DATABASE_INSERT_ERROR, "Unable to insert new building.");
+                throw new SeerException(ErrorCodes.DATABASE_INSERT_ERROR, "Unable to insert new task category.");
             }
         }else{
             return new ResponseData(1,"",null);
@@ -500,7 +520,7 @@ public class SeerService extends AbstractSeerService {
                     return new ResponseData(StatusCodes.UNKNOWN_ERROR, "", deletedObjectId);
                 }
             } catch (DAOException ex) {
-                throw new SeerException(ErrorCodes.DATABASE_UPDATE_ERROR, "Unable to delete building.");
+                throw new SeerException(ErrorCodes.DATABASE_UPDATE_ERROR, "Unable to delete task category.");
             }
         }else{
             return new ResponseData(1,"",null);
@@ -533,7 +553,7 @@ public class SeerService extends AbstractSeerService {
         }
     }
 
-    public ResponseData getMessagesByBuildingId(String sessionToken, Long id)/* throws SeerException */ {
+    public ResponseData getMessagesByBuildingId(String sessionToken, Long id) throws SeerException {
         Session session = getSubject(sessionToken).getSession();
         UserProfile userProfile = (UserProfile) session.getAttribute("userProfile");
 
@@ -554,7 +574,7 @@ public class SeerService extends AbstractSeerService {
         }
     }
 
-    public ResponseData getMessagesByApartmentId(String sessionToken, Long id)/* throws SeerException */ {
+    public ResponseData getMessagesByApartmentId(String sessionToken, Long id) throws SeerException {
         Session session = getSubject(sessionToken).getSession();
         UserProfile userProfile = (UserProfile) session.getAttribute("userProfile");
 
@@ -582,14 +602,14 @@ public class SeerService extends AbstractSeerService {
         if (userProfile != null && userProfile.role == UserTypeEnum.SEER){
             MessageDAO dao = new MessageDAO(dataSource);
             try {
-                Message createdMessage = dao.create(object);
+                Message createdMessage = dao.create(object, userProfile.role);
                 if (createdMessage != null) {
                     return new ResponseData(StatusCodes.OK, "", createdMessage);
                 } else {
                     return new ResponseData(StatusCodes.UNKNOWN_ERROR, "", createdMessage);
                 }
             } catch (DAOException ex) {
-                throw new SeerException(ErrorCodes.DATABASE_INSERT_ERROR, "Unable to insert new building.");
+                throw new SeerException(ErrorCodes.DATABASE_INSERT_ERROR, "Unable to insert new message.");
             }
         }else{
             return new ResponseData(1,"",null);
@@ -631,7 +651,28 @@ public class SeerService extends AbstractSeerService {
                     return new ResponseData(StatusCodes.UNKNOWN_ERROR, "", deletedObjectId);
                 }
             } catch (DAOException ex) {
-                throw new SeerException(ErrorCodes.DATABASE_UPDATE_ERROR, "Unable to delete building.");
+                throw new SeerException(ErrorCodes.DATABASE_UPDATE_ERROR, "Unable to delete message.");
+            }
+        }else{
+            return new ResponseData(1,"",null);
+        }
+    }
+
+    public ResponseData markMessageAsRead(String sessionToken, Long id) throws SeerException {
+        Session session = getSubject(sessionToken).getSession();
+        UserProfile userProfile = (UserProfile) session.getAttribute("userProfile");
+
+        if (userProfile != null && userProfile.role == UserTypeEnum.SEER){
+            MessageDAO dao = new MessageDAO(dataSource);
+            try {
+                Long markedObjectId = dao.markAsRead(id);
+                if (markedObjectId > 0) {
+                    return new ResponseData(StatusCodes.OK, "", markedObjectId);
+                } else {
+                    return new ResponseData(StatusCodes.UNKNOWN_ERROR, "", markedObjectId);
+                }
+            } catch (DAOException ex) {
+                throw new SeerException(ErrorCodes.DATABASE_UPDATE_ERROR, "Unable to mark message as read.");
             }
         }else{
             return new ResponseData(1,"",null);
@@ -664,7 +705,7 @@ public class SeerService extends AbstractSeerService {
         }
     }
 
-    public ResponseData getMonitoringsByBuildingId(String sessionToken, Long id)/* throws SeerException */ {
+    public ResponseData getMonitoringsByBuildingId(String sessionToken, Long id) throws SeerException {
         Session session = getSubject(sessionToken).getSession();
         UserProfile userProfile = (UserProfile) session.getAttribute("userProfile");
 
@@ -685,14 +726,14 @@ public class SeerService extends AbstractSeerService {
         }
     }
 
-    public ResponseData getMonitoringsByBuildingIdAndCategoryId(String sessionToken, Long buildingId, Long categoryId)/* throws SeerException */ {
+    public ResponseData getMonitoringsByBuildingIdAndCategoryId(String sessionToken, Long buildingId, Long categoryId) throws SeerException {
         Session session = getSubject(sessionToken).getSession();
         UserProfile userProfile = (UserProfile) session.getAttribute("userProfile");
 
         if (userProfile != null && userProfile.role == UserTypeEnum.SEER){
             MonitoringDAO dao = new MonitoringDAO(dataSource);
             try {
-                Collection<Monitoring> res = dao.getMonitoringsByBuildingId(buildingId, categoryId);
+                Collection<Monitoring> res = dao.getMonitoringsByBuildingIdAndCategoryId(buildingId, categoryId);
                 if (res != null) {
                     return new ResponseData(StatusCodes.OK, "", res);
                 } else {
@@ -720,7 +761,7 @@ public class SeerService extends AbstractSeerService {
                     return new ResponseData(StatusCodes.UNKNOWN_ERROR, "", createdMonitoring);
                 }
             } catch (DAOException ex) {
-                throw new SeerException(ErrorCodes.DATABASE_INSERT_ERROR, "Unable to insert new building.");
+                throw new SeerException(ErrorCodes.DATABASE_INSERT_ERROR, "Unable to insert new monitoring.");
             }
         }else{
             return new ResponseData(1,"",null);
@@ -762,7 +803,7 @@ public class SeerService extends AbstractSeerService {
                     return new ResponseData(StatusCodes.UNKNOWN_ERROR, "", deletedObjectId);
                 }
             } catch (DAOException ex) {
-                throw new SeerException(ErrorCodes.DATABASE_UPDATE_ERROR, "Unable to delete building.");
+                throw new SeerException(ErrorCodes.DATABASE_UPDATE_ERROR, "Unable to delete monitoring.");
             }
         }else{
             return new ResponseData(1,"",null);
@@ -795,7 +836,7 @@ public class SeerService extends AbstractSeerService {
         }
     }
 
-    public ResponseData getMonitoringCategories(String sessionToken)/* throws SeerException */ {
+    public ResponseData getMonitoringCategories(String sessionToken) throws SeerException {
         Session session = getSubject(sessionToken).getSession();
         UserProfile userProfile = (UserProfile) session.getAttribute("userProfile");
 
@@ -816,7 +857,7 @@ public class SeerService extends AbstractSeerService {
         }
     }
 
-    public ResponseData getMonitoringCategoriesByBuildingId(String sessionToken, Long id)/* throws SeerException */ {
+    public ResponseData getMonitoringCategoriesByBuildingId(String sessionToken, Long id) throws SeerException {
         Session session = getSubject(sessionToken).getSession();
         UserProfile userProfile = (UserProfile) session.getAttribute("userProfile");
 
@@ -851,7 +892,7 @@ public class SeerService extends AbstractSeerService {
                     return new ResponseData(StatusCodes.UNKNOWN_ERROR, "", createdMonitoringCategory);
                 }
             } catch (DAOException ex) {
-                throw new SeerException(ErrorCodes.DATABASE_INSERT_ERROR, "Unable to insert new building.");
+                throw new SeerException(ErrorCodes.DATABASE_INSERT_ERROR, "Unable to insert new monitoring category.");
             }
         }else{
             return new ResponseData(1,"",null);
@@ -893,7 +934,7 @@ public class SeerService extends AbstractSeerService {
                     return new ResponseData(StatusCodes.UNKNOWN_ERROR, "", deletedObjectId);
                 }
             } catch (DAOException ex) {
-                throw new SeerException(ErrorCodes.DATABASE_UPDATE_ERROR, "Unable to delete building.");
+                throw new SeerException(ErrorCodes.DATABASE_UPDATE_ERROR, "Unable to delete monitoring category.");
             }
         }else{
             return new ResponseData(1,"",null);
