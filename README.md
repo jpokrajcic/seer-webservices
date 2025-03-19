@@ -1,1 +1,1 @@
-Server side for Seer building management
+Server side for hobby building management project
